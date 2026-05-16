@@ -1,0 +1,26 @@
+services:
+
+  frontend:
+    image: nginx:alpine
+    ports:
+      - "8080:80"
+
+  backend:
+    build: ./backend
+    ports:
+      - "5000:5000"
+    environment:
+      DB_HOST: db
+      DB_USER: devuser
+      DB_PASSWORD: devpass
+      DB_NAME: devdb
+    depends_on:
+      - db
+
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: devdb
+      MYSQL_USER: devuser
+      MYSQL_PASSWORD: devpass
