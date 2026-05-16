@@ -1,4 +1,4 @@
-name: Docker Build Check
+name: Docker Build and Test
 
 on:
   push:
@@ -9,15 +9,12 @@ on:
       - master
 
 jobs:
-  docker-build:
+  docker-build-test:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Build backend image
-        run: docker build -t flask-backend ./backend
+        uses: actions/checkout@v6
 
       - name: Validate Docker Compose
         run: docker compose config
@@ -25,3 +22,20 @@ jobs:
       - name: Build Compose services
         run: docker compose build
 
+      - name: Start containers
+        run: docker compose up -d
+
+      - name: Wait for services
+        run: sleep 20
+
+      - name: Test backend home endpoint
+        run: curl -f http://localhost:5000
+
+      - name: Test backend database endpoint
+        run: curl -f http://localhost:5000/db
+
+      - name: Show running containers
+        run: docker ps
+
+      - name: Stop containers
+        run: docker compose down
