@@ -26,18 +26,25 @@ jobs:
         run: docker compose up -d
 
       - name: Wait for services
-        run: sleep 20
-
-      - name: Test backend home endpoint
-        run: curl -f http://localhost:5000
-
-      - name: Test backend database endpoint
-        run: curl -f http://localhost:5000/db
+        run: sleep 30
 
       - name: Show running containers
-        run: docker ps
+        run: docker compose ps
+
+      - name: Test Nginx reverse proxy home endpoint
+        run: curl -f http://localhost:8080/
+
+      - name: Test backend health endpoint through Nginx
+        run: curl -f http://localhost:8080/health
+
+      - name: Test backend readiness endpoint through Nginx
+        run: curl -f http://localhost:8080/ready
+
+      - name: Test backend database endpoint through Nginx
+        run: curl -f http://localhost:8080/db
 
       - name: Stop containers
+        if: always()
         run: docker compose down
 
       - name: Login to Docker Hub
