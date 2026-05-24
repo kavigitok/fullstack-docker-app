@@ -1,26 +1,20 @@
-# Fullstack Docker App
+## Production-like Upgrade
 
-A containerized full-stack demo application built with Flask, MySQL, Docker, Docker Compose, and GitHub Actions.
+This project uses Nginx as a reverse proxy in front of a Gunicorn-powered Flask backend. The backend connects to MySQL over the internal Docker Compose network.
 
-## Tech Stack
+### Request Flow
 
-- Python Flask
-- MySQL 8.0
-- Docker
-- Docker Compose
-- GitHub Actions
+Browser / curl → Nginx Reverse Proxy → Gunicorn Flask Backend → MySQL Database
 
-## Architecture
+### Health Endpoints
 
-Browser → Flask Backend → MySQL Database
+- `/health` checks whether the backend application is alive.
+- `/ready` checks whether the backend can connect to the MySQL database.
+- `/db` validates backend-to-database connectivity.
 
-## Project Structure
+### Deployment-style Compose
 
-```text
-.
-├── backend
-│   ├── app.py
-│   ├── Dockerfile
-│   └── requirements.txt
-├── docker-compose.yml
-└── .github/workflows/docker-build.yml
+`docker-compose.deploy.yml` runs the backend using the published Docker Hub image instead of building from local source code.
+
+```bash
+docker compose -f docker-compose.deploy.yml up -d
